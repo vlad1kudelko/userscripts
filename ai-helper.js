@@ -10,12 +10,26 @@
 (() => {
     'use strict';
     //---------------------------------------------------------------
-    async function run_api(inp_url) {
+    async function run_api(inp_url, inp_data) {
         const token = localStorage.getItem('aihelper__var_token');
-        const res = await fetch(inp_url, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-        });
+        let res;
+        if (inp_data) {
+            res = await fetch(inp_url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inp_data),
+            });
+        } else {
+            res = await fetch(inp_url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        }
         if (!res.ok) { alert('Error: ' + res.status); return {}; }
         const res_json = await res.json();
         return res_json;
@@ -38,6 +52,7 @@
                 row-gap: 10px;
                 padding: 20px;
                 min-width: 300px;
+                max-width: 800px;
                 border-top-left-radius: 10px;
                 background-color: #222;
                 border-top: 1px solid gray;
@@ -114,7 +129,19 @@
     // --- aihelper__btn ---
     div.querySelector('.aihelper__btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        // TODO
+        const var_system = localStorage.getItem('aihelper__var_system');
+        const var_prompt = localStorage.getItem('aihelper__var_prompt');
+        const var_data   = localStorage.getItem('aihelper__var_data');
+        const prompt = var_prompt.replaceAll('{Data}', var_data);
+        document.querySelector('.aihelper__result').innerText = 'Запрос отправлен, ожидайте...';
+        const res = await run_api('https://api.proxyapi.ru/openai/v1/chat/completions', {
+            model: 'gpt-4o',
+            messages: [
+                { role: 'system', content: var_system },
+                { role: 'user',   content: prompt     },
+            ],
+        });
+        document.querySelector('.aihelper__result').innerText = res.choices[0].message.content;
     });
     div.querySelector('.aihelper__btn_copy').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
