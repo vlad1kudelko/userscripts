@@ -93,13 +93,24 @@
                 <div class="btn btn_load">Load</div>
             </div>
 
-            <div class="balance">Баланс: <span>X</span></div>
+            <div class="txt_balance">Баланс: <span>X</span></div>
         </div>
     `;
+    // --- btn_toggle ---
     div.querySelector('.ai_helper .btn_toggle').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
         document.querySelector('.ai_helper').classList.toggle('hide');
     });
+    // --- inp ---
+    div.querySelector('.ai_helper .inp_prompt').addEventListener('input', (event) => {
+        if (event.target !== event.currentTarget) { return; }
+        localStorage.setItem('ai_helper__prompt', event.target.textContent);
+    });
+    div.querySelector('.ai_helper .inp_data').addEventListener('input', (event) => {
+        if (event.target !== event.currentTarget) { return; }
+        localStorage.setItem('ai_helper__data', event.target.textContent);
+    });
+    // --- btn ---
     div.querySelector('.ai_helper .btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
         // TODO
@@ -111,7 +122,7 @@
     div.querySelector('.ai_helper .btn_balance').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
         const balance_obj = await run_api('https://api.proxyapi.ru/proxyapi/balance');
-        document.querySelector('.ai_helper .balance span').innerText = balance_obj.balance;
+        document.querySelector('.ai_helper .txt_balance span').innerText = balance_obj.balance;
     });
     div.querySelector('.ai_helper .btn_load').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
