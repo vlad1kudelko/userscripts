@@ -11,7 +11,7 @@
     'use strict';
     //---------------------------------------------------------------
     async function run_api(inp_url) {
-        const token = localStorage.getItem('ai_helper__token');
+        const token = localStorage.getItem('aihelper__var_token');
         const res = await fetch(inp_url, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
@@ -21,10 +21,13 @@
         return res_json;
     }
     //---------------------------------------------------------------
+    const var_system = localStorage.getItem('aihelper__var_system');
+    const var_prompt = localStorage.getItem('aihelper__var_prompt');
+    const var_data   = localStorage.getItem('aihelper__var_data');
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
-            .ai_helper {
+            .aihelper {
                 position: fixed;
                 right: 0;
                 bottom: 0;
@@ -40,12 +43,12 @@
                 border-top: 1px solid gray;
                 border-left: 1px solid gray;
             }
-            .ai_helper.hide {
+            .aihelper_hide {
                 height: 0;
                 padding: 0;
                 border: none;
             }
-            .ai_helper .btn_toggle {
+            .aihelper__toggle {
                 position: absolute;
                 right: 20px;
                 bottom: 100%;
@@ -56,81 +59,79 @@
                 border: 1px solid gray;
                 border-bottom: none;
             }
-            .ai_helper .inp {
+            .aihelper__inp {
                 padding: 10px;
                 background-color: black;
                 outline: none;
             }
-            .ai_helper .btns_group {
+            .aihelper__group {
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
             }
-            .ai_helper .btn {
+            .aihelper__btn {
                 padding: 10px;
                 text-align: center;
                 background-color: black;
                 cursor: pointer;
             }
         </style>
-        <div class="ai_helper hide">
-            <div class="btn_toggle">AI</div>
+        <div class="aihelper aihelper_hide">
+            <div class="aihelper__toggle">AI</div>
+
+            <div>System</div>
+            <div class="aihelper__inp aihelper__inp_system" contenteditable="true">${var_system}</div>
 
             <div>Prompt</div>
-            <div class="inp inp_prompt" contenteditable="true"></div>
+            <div class="aihelper__inp aihelper__inp_prompt" contenteditable="true">${var_prompt}</div>
 
             <div>{Data}</div>
-            <div class="inp inp_data" contenteditable="true"></div>
+            <div class="aihelper__inp aihelper__inp_data" contenteditable="true">${var_data}</div>
 
             <div>Ответ</div>
-            <div class="inp result" contenteditable="true"></div>
+            <div class="aihelper__inp aihelper__result" contenteditable="true"></div>
 
             <div>Run</div>
-            <div class="btns_group">
-                <div class="btn btn_gen">Gen</div>
-                <div class="btn btn_copy">Copy</div>
-                <div class="btn btn_balance">Balance</div>
-                <div class="btn btn_load">Load</div>
+            <div class="aihelper__group">
+                <div class="aihelper__btn aihelper__btn_gen">Gen</div>
+                <div class="aihelper__btn aihelper__btn_copy">Copy</div>
+                <div class="aihelper__btn aihelper__btn_balance">Balance</div>
+                <div class="aihelper__btn aihelper__btn_load">Load</div>
             </div>
 
-            <div class="txt_balance">Баланс: <span>X</span></div>
+            <div class="aihelper__balance">Баланс: <span>X</span></div>
         </div>
     `;
-    // --- btn_toggle ---
-    div.querySelector('.ai_helper .btn_toggle').addEventListener('click', async (event) => {
+    // --- aihelper__toggle ---
+    div.querySelector('.aihelper__toggle').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        document.querySelector('.ai_helper').classList.toggle('hide');
+        document.querySelector('.aihelper').classList.toggle('aihelper_hide');
     });
-    // --- inp ---
-    div.querySelector('.ai_helper .inp_prompt').addEventListener('input', (event) => {
-        if (event.target !== event.currentTarget) { return; }
-        localStorage.setItem('ai_helper__prompt', event.target.textContent);
-    });
-    div.querySelector('.ai_helper .inp_data').addEventListener('input', (event) => {
-        if (event.target !== event.currentTarget) { return; }
-        localStorage.setItem('ai_helper__data', event.target.textContent);
-    });
-    // --- btn ---
-    div.querySelector('.ai_helper .btn_gen').addEventListener('click', async (event) => {
+    // --- aihelper__inp ---
+    div.querySelector('.aihelper__inp_system').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system', event.target.textContent); });
+    div.querySelector('.aihelper__inp_prompt').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt', event.target.textContent); });
+    div.querySelector('.aihelper__inp_data')  .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',   event.target.textContent); });
+    // --- aihelper__btn ---
+    div.querySelector('.aihelper__btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
         // TODO
     });
-    div.querySelector('.ai_helper .btn_copy').addEventListener('click', async (event) => {
+    div.querySelector('.aihelper__btn_copy').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        await navigator.clipboard.writeText(document.querySelector('.ai_helper .result').innerText);
+        await navigator.clipboard.writeText(document.querySelector('.aihelper__result').innerText);
     });
-    div.querySelector('.ai_helper .btn_balance').addEventListener('click', async (event) => {
+    div.querySelector('.aihelper__btn_balance').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
         const balance_obj = await run_api('https://api.proxyapi.ru/proxyapi/balance');
-        document.querySelector('.ai_helper .txt_balance span').innerText = balance_obj.balance;
+        document.querySelector('.aihelper__balance span').innerText = balance_obj.balance;
     });
-    div.querySelector('.ai_helper .btn_load').addEventListener('click', async (event) => {
+    div.querySelector('.aihelper__btn_load').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        const good_keys = [ 'ai_helper__token', 'ai_helper__prompt', 'ai_helper__data' ];
+        const good_keys = [ 'aihelper__var_token', 'aihelper__var_prompt', 'aihelper__var_data' ];
         const old_json = JSON.stringify({
-            'ai_helper__token':  localStorage.getItem('ai_helper__token'),
-            'ai_helper__prompt': localStorage.getItem('ai_helper__prompt'),
-            'ai_helper__data':   localStorage.getItem('ai_helper__data'),
+            'aihelper__var_token':  localStorage.getItem('aihelper__var_token'),
+            'aihelper__var_prompt': localStorage.getItem('aihelper__var_prompt'),
+            'aihelper__var_data':   localStorage.getItem('aihelper__var_data'),
         });
         const new_json = prompt('JSON', old_json);
         if (!new_json) { return; }
