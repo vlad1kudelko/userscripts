@@ -35,10 +35,10 @@
         return res_json;
     }
     //---------------------------------------------------------------
-    const var_version = localStorage.getItem('aihelper__var_version');
-    const var_system  = localStorage.getItem('aihelper__var_system');
+    const var_version = localStorage.getItem('aihelper__var_version') || 'gpt-4.1-nano';
+    const var_system  = localStorage.getItem('aihelper__var_system')  || '';
     const var_prompt  = localStorage.getItem('aihelper__var_prompt');
-    const var_data    = localStorage.getItem('aihelper__var_data');
+    const var_data    = localStorage.getItem('aihelper__var_data')    || '';
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
@@ -79,6 +79,8 @@
                 padding: 10px;
                 background-color: black;
                 outline: none;
+                border: none;
+                color: gray;
             }
             .aihelper__group {
                 display: grid;
@@ -96,7 +98,13 @@
             <div class="aihelper__toggle">AI</div>
 
             <div>Version</div>
-            <div class="aihelper__inp aihelper__inp_version" contenteditable="true">${var_version}</div>
+            <select class="aihelper__inp aihelper__inp_version">
+                <option value="gpt-4.1-nano" ${ var_version === 'gpt-4.1-nano' ? 'selected' : '' }> gpt-4.1-nano (28,80 ₽)  </option>
+                <option value="gpt-4o-mini"  ${ var_version === 'gpt-4o-mini'  ? 'selected' : '' }> gpt-4o-mini  (43,20 ₽)  </option>
+                <option value="gpt-4.1-mini" ${ var_version === 'gpt-4.1-mini' ? 'selected' : '' }> gpt-4.1-mini (115,20 ₽) </option>
+                <option value="gpt-4.1"      ${ var_version === 'gpt-4.1'      ? 'selected' : '' }> gpt-4.1      (576 ₽)    </option>
+                <option value="gpt-4o"       ${ var_version === 'gpt-4o'       ? 'selected' : '' }> gpt-4o       (720 ₽)    </option>
+            </select>
 
             <div>System</div>
             <div class="aihelper__inp aihelper__inp_system" contenteditable="true">${var_system}</div>
@@ -127,17 +135,17 @@
         document.querySelector('.aihelper').classList.toggle('aihelper_hide');
     });
     // --- aihelper__inp ---
-    div.querySelector('.aihelper__inp_version').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_version', event.target.textContent); });
+    div.querySelector('.aihelper__inp_version').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_version', event.target.value);       });
     div.querySelector('.aihelper__inp_system') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system',  event.target.textContent); });
     div.querySelector('.aihelper__inp_prompt') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt',  event.target.textContent); });
     div.querySelector('.aihelper__inp_data')   .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',    event.target.textContent); });
     // --- aihelper__btn ---
     div.querySelector('.aihelper__btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        const var_version = localStorage.getItem('aihelper__var_version');
-        const var_system  = localStorage.getItem('aihelper__var_system');
-        const var_prompt  = localStorage.getItem('aihelper__var_prompt');
-        const var_data    = localStorage.getItem('aihelper__var_data');
+        const var_version = document.querySelector('.aihelper__inp_version').value;
+        const var_system  = document.querySelector('.aihelper__inp_system' ).textContent;
+        const var_prompt  = document.querySelector('.aihelper__inp_prompt' ).textContent;
+        const var_data    = document.querySelector('.aihelper__inp_data'   ).textContent;
         const prompt = var_prompt.replaceAll('{Data}', var_data);
         document.querySelector('.aihelper__result').innerText = 'Запрос отправлен, ожидайте...';
         const res = await run_api('https://api.proxyapi.ru/openai/v1/chat/completions', {
