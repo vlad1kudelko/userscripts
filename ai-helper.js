@@ -10,6 +10,17 @@
 (() => {
     'use strict';
     //---------------------------------------------------------------
+    async function run_api(inp_url) {
+        const token = localStorage.getItem('ai_helper__token');
+        const res = await fetch(inp_url, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) { alert('Error: ' + res.status); return {}; }
+        const res_json = await res.json();
+        return res_json;
+    }
+    //---------------------------------------------------------------
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
@@ -53,7 +64,7 @@
             .ai_helper .btns_group {
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
-                column-gap: 10px;
+                gap: 10px;
             }
             .ai_helper .btn {
                 padding: 10px;
@@ -66,10 +77,10 @@
             <div class="btn_toggle">AI</div>
 
             <div>Prompt</div>
-            <div class="inp" contenteditable="true"></div>
+            <div class="inp inp_prompt" contenteditable="true"></div>
 
             <div>{Data}</div>
-            <div class="inp" contenteditable="true"></div>
+            <div class="inp inp_data" contenteditable="true"></div>
 
             <div>Ответ</div>
             <div class="inp result" contenteditable="true"></div>
@@ -79,6 +90,7 @@
                 <div class="btn btn_gen">Gen</div>
                 <div class="btn btn_copy">Copy</div>
                 <div class="btn btn_balance">Balance</div>
+                <div class="btn btn_load">Load</div>
             </div>
 
             <div class="balance">Баланс: <span>X</span></div>
@@ -98,7 +110,25 @@
     });
     div.querySelector('.ai_helper .btn_balance').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        // TODO
+        const balance_obj = await run_api('https://api.proxyapi.ru/proxyapi/balance');
+        document.querySelector('.ai_helper .balance span').innerText = balance_obj.balance;
+    });
+    div.querySelector('.ai_helper .btn_load').addEventListener('click', async (event) => {
+        if (event.target !== event.currentTarget) { return; }
+        const good_keys = [ 'ai_helper__token', 'ai_helper__prompt', 'ai_helper__data' ];
+        const old_json = JSON.stringify({
+            'ai_helper__token':  localStorage.getItem('ai_helper__token'),
+            'ai_helper__prompt': localStorage.getItem('ai_helper__prompt'),
+            'ai_helper__data':   localStorage.getItem('ai_helper__data'),
+        });
+        const new_json = prompt('JSON', old_json);
+        if (!new_json) { return; }
+        if (new_json === old_json) { return; }
+        const inp_obj = JSON.parse(new_json);
+        for (let key in inp_obj) {
+            if (!good_keys.includes(key)) { alert('Bad key: ' + key); return; }
+            localStorage.setItem(key, inp_obj[key]);
+        }
     });
     document.body.append(div);
     //---------------------------------------------------------------
