@@ -35,9 +35,10 @@
         return res_json;
     }
     //---------------------------------------------------------------
-    const var_system = localStorage.getItem('aihelper__var_system');
-    const var_prompt = localStorage.getItem('aihelper__var_prompt');
-    const var_data   = localStorage.getItem('aihelper__var_data');
+    const var_version = localStorage.getItem('aihelper__var_version');
+    const var_system  = localStorage.getItem('aihelper__var_system');
+    const var_prompt  = localStorage.getItem('aihelper__var_prompt');
+    const var_data    = localStorage.getItem('aihelper__var_data');
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
@@ -94,6 +95,9 @@
         <div class="aihelper aihelper_hide">
             <div class="aihelper__toggle">AI</div>
 
+            <div>Version</div>
+            <div class="aihelper__inp aihelper__inp_version" contenteditable="true">${var_version}</div>
+
             <div>System</div>
             <div class="aihelper__inp aihelper__inp_system" contenteditable="true">${var_system}</div>
 
@@ -123,19 +127,21 @@
         document.querySelector('.aihelper').classList.toggle('aihelper_hide');
     });
     // --- aihelper__inp ---
-    div.querySelector('.aihelper__inp_system').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system', event.target.textContent); });
-    div.querySelector('.aihelper__inp_prompt').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt', event.target.textContent); });
-    div.querySelector('.aihelper__inp_data')  .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',   event.target.textContent); });
+    div.querySelector('.aihelper__inp_version').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_version', event.target.textContent); });
+    div.querySelector('.aihelper__inp_system') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system',  event.target.textContent); });
+    div.querySelector('.aihelper__inp_prompt') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt',  event.target.textContent); });
+    div.querySelector('.aihelper__inp_data')   .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',    event.target.textContent); });
     // --- aihelper__btn ---
     div.querySelector('.aihelper__btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        const var_system = localStorage.getItem('aihelper__var_system');
-        const var_prompt = localStorage.getItem('aihelper__var_prompt');
-        const var_data   = localStorage.getItem('aihelper__var_data');
+        const var_version = localStorage.getItem('aihelper__var_version');
+        const var_system  = localStorage.getItem('aihelper__var_system');
+        const var_prompt  = localStorage.getItem('aihelper__var_prompt');
+        const var_data    = localStorage.getItem('aihelper__var_data');
         const prompt = var_prompt.replaceAll('{Data}', var_data);
         document.querySelector('.aihelper__result').innerText = 'Запрос отправлен, ожидайте...';
         const res = await run_api('https://api.proxyapi.ru/openai/v1/chat/completions', {
-            model: 'gpt-4o',
+            model: var_version,
             messages: [
                 { role: 'system', content: var_system },
                 { role: 'user',   content: prompt     },
@@ -154,11 +160,19 @@
     });
     div.querySelector('.aihelper__btn_load').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
-        const good_keys = [ 'aihelper__var_token', 'aihelper__var_prompt', 'aihelper__var_data' ];
+        const good_keys = [
+            'aihelper__var_token',
+            'aihelper__var_version',
+            'aihelper__var_system',
+            'aihelper__var_prompt',
+            'aihelper__var_data',
+        ];
         const old_json = JSON.stringify({
-            'aihelper__var_token':  localStorage.getItem('aihelper__var_token'),
-            'aihelper__var_prompt': localStorage.getItem('aihelper__var_prompt'),
-            'aihelper__var_data':   localStorage.getItem('aihelper__var_data'),
+            'aihelper__var_token':   localStorage.getItem('aihelper__var_token'),
+            'aihelper__var_version': localStorage.getItem('aihelper__var_version'),
+            'aihelper__var_system':  localStorage.getItem('aihelper__var_system'),
+            'aihelper__var_prompt':  localStorage.getItem('aihelper__var_prompt'),
+            'aihelper__var_data':    localStorage.getItem('aihelper__var_data'),
         });
         const new_json = prompt('JSON', old_json);
         if (!new_json) { return; }
