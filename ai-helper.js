@@ -49,9 +49,6 @@
                 z-index: 999999;
                 color: gray;
                 font-family: monospace;
-                display: grid;
-                row-gap: 10px;
-                padding: 20px;
                 min-width: 300px;
                 max-width: 800px;
                 border-top-left-radius: 10px;
@@ -61,7 +58,6 @@
             }
             .aihelper_hide {
                 height: 0;
-                padding: 0;
                 border: none;
             }
             .aihelper__toggle {
@@ -75,6 +71,13 @@
                 border: 1px solid gray;
                 border-bottom: none;
                 cursor: pointer;
+            }
+            .aihelper__scroll {
+                max-height: 80vh;
+                overflow-y: scroll;
+                display: grid;
+                row-gap: 10px;
+                padding: 20px;
             }
             .aihelper__inp {
                 padding: 10px;
