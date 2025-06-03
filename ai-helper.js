@@ -107,16 +107,16 @@
             </select>
 
             <div>System</div>
-            <div class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</div>
+            <pre class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</pre>
 
             <div>Prompt</div>
-            <div class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</div>
+            <pre class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</pre>
 
             <div>{Data}</div>
-            <div class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</div>
+            <pre class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</pre>
 
             <div>Ответ</div>
-            <div class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></div>
+            <pre class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></pre>
 
             <div>Run</div>
             <div class="aihelper__group">
