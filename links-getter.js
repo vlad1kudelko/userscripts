@@ -33,7 +33,6 @@
                 border-top: 1px solid gray;
                 border-left: 1px solid gray;
             }
-
             .linksgetter_hide {
                 height: 0;
                 padding: 0;
