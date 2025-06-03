@@ -116,7 +116,7 @@
             <div>{Data}</div>
             <div class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</div>
 
-            <div>Ответ</div>
+            <div>Результат</div>
             <div class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></div>
 
             <div>Run</div>
