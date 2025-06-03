@@ -98,36 +98,38 @@
         <div class="aihelper aihelper_hide">
             <div class="aihelper__toggle">AI</div>
 
-            <div>Version</div>
-            <select class="aihelper__inp aihelper__inp_version">
-                <option value="gpt-4.1-nano" ${ var_version === 'gpt-4.1-nano' ? 'selected' : '' }> gpt-4.1-nano (28,80 ₽)  </option>
-                <option value="gpt-4o-mini"  ${ var_version === 'gpt-4o-mini'  ? 'selected' : '' }> gpt-4o-mini  (43,20 ₽)  </option>
-                <option value="gpt-4.1-mini" ${ var_version === 'gpt-4.1-mini' ? 'selected' : '' }> gpt-4.1-mini (115,20 ₽) </option>
-                <option value="gpt-4.1"      ${ var_version === 'gpt-4.1'      ? 'selected' : '' }> gpt-4.1      (576 ₽)    </option>
-                <option value="gpt-4o"       ${ var_version === 'gpt-4o'       ? 'selected' : '' }> gpt-4o       (720 ₽)    </option>
-            </select>
+            <div class="aihelper__scroll">
+                <div>Version</div>
+                <select class="aihelper__inp aihelper__inp_version">
+                    <option value="gpt-4.1-nano" ${ var_version === 'gpt-4.1-nano' ? 'selected' : '' }> gpt-4.1-nano (28,80 ₽)  </option>
+                    <option value="gpt-4o-mini"  ${ var_version === 'gpt-4o-mini'  ? 'selected' : '' }> gpt-4o-mini  (43,20 ₽)  </option>
+                    <option value="gpt-4.1-mini" ${ var_version === 'gpt-4.1-mini' ? 'selected' : '' }> gpt-4.1-mini (115,20 ₽) </option>
+                    <option value="gpt-4.1"      ${ var_version === 'gpt-4.1'      ? 'selected' : '' }> gpt-4.1      (576 ₽)    </option>
+                    <option value="gpt-4o"       ${ var_version === 'gpt-4o'       ? 'selected' : '' }> gpt-4o       (720 ₽)    </option>
+                </select>
 
-            <div>System</div>
-            <div class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</div>
+                <div>System</div>
+                <div class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</div>
 
-            <div>Prompt</div>
-            <div class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</div>
+                <div>Prompt</div>
+                <div class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</div>
 
-            <div>{Data}</div>
-            <div class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</div>
+                <div>{Data}</div>
+                <div class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</div>
 
-            <div>Результат</div>
-            <div class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></div>
+                <div>Результат</div>
+                <div class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></div>
 
-            <div>Run</div>
-            <div class="aihelper__group">
-                <div class="aihelper__btn aihelper__btn_gen">Gen</div>
-                <div class="aihelper__btn aihelper__btn_copy">Copy</div>
-                <div class="aihelper__btn aihelper__btn_balance">Balance</div>
-                <div class="aihelper__btn aihelper__btn_load">Load</div>
+                <div>Run</div>
+                <div class="aihelper__group">
+                    <div class="aihelper__btn aihelper__btn_gen">Gen</div>
+                    <div class="aihelper__btn aihelper__btn_copy">Copy</div>
+                    <div class="aihelper__btn aihelper__btn_balance">Balance</div>
+                    <div class="aihelper__btn aihelper__btn_load">Load</div>
+                </div>
+
+                <div class="aihelper__balance">Баланс: <span>X</span></div>
             </div>
-
-            <div class="aihelper__balance">Баланс: <span>X</span></div>
         </div>
     `;
     // --- aihelper__toggle ---
