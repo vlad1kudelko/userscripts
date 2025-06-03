@@ -74,6 +74,7 @@
                 background-color: #222;
                 border: 1px solid gray;
                 border-bottom: none;
+                cursor: pointer;
             }
             .aihelper__inp {
                 padding: 10px;
@@ -107,16 +108,16 @@
             </select>
 
             <div>System</div>
-            <pre class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</pre>
+            <div class="aihelper__inp aihelper__inp_system" contenteditable="plaintext-only">${var_system}</div>
 
             <div>Prompt</div>
-            <pre class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</pre>
+            <div class="aihelper__inp aihelper__inp_prompt" contenteditable="plaintext-only">${var_prompt}</div>
 
             <div>{Data}</div>
-            <pre class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</pre>
+            <div class="aihelper__inp aihelper__inp_data" contenteditable="plaintext-only">${var_data}</div>
 
             <div>Ответ</div>
-            <pre class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></pre>
+            <div class="aihelper__inp aihelper__result" contenteditable="plaintext-only"></div>
 
             <div>Run</div>
             <div class="aihelper__group">
@@ -135,10 +136,10 @@
         document.querySelector('.aihelper').classList.toggle('aihelper_hide');
     });
     // --- aihelper__inp ---
-    div.querySelector('.aihelper__inp_version').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_version', event.target.value);       });
-    div.querySelector('.aihelper__inp_system') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system',  event.target.textContent); });
-    div.querySelector('.aihelper__inp_prompt') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt',  event.target.textContent); });
-    div.querySelector('.aihelper__inp_data')   .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',    event.target.textContent); });
+    div.querySelector('.aihelper__inp_version').addEventListener('input', (event) => { localStorage.setItem('aihelper__var_version', event.target.value);     });
+    div.querySelector('.aihelper__inp_system') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_system',  event.target.innerHTML); });
+    div.querySelector('.aihelper__inp_prompt') .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_prompt',  event.target.innerHTML); });
+    div.querySelector('.aihelper__inp_data')   .addEventListener('input', (event) => { localStorage.setItem('aihelper__var_data',    event.target.innerHTML); });
     // --- aihelper__btn ---
     div.querySelector('.aihelper__btn_gen').addEventListener('click', async (event) => {
         if (event.target !== event.currentTarget) { return; }
