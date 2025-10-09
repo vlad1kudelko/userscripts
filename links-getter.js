@@ -10,26 +10,44 @@
 (() => {
     'use strict';
     let clear_urls = new Set();
+    let is_preview = false;
     //---------------------------------------------------------------
     const var_selector = localStorage.getItem('linksgetter__var_selector') || '';
     const var_field    = localStorage.getItem('linksgetter__var_field') || 'href';
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
-            .linksgetter {
+            .linksgetter__preview .linksgetter {
                 position: fixed;
+                z-index: 999998;
+                font-family: monospace;
+                margin: 0;
+                padding: 20px;
+            }
+            .linksgetter__preview {
+                top: 0;
+                right: 0;
+                color: white;
+                background-color: rgba(0,0,0,0.8);
+                display: none;
+                min-width: 300px;
+                max-width: 50vw;
+                max-height: 50vh;
+                overflow: scroll;
+            }
+            .linksgetter__preview.show {
+                display: unset;
+            }
+            .linksgetter {
                 right: 0;
                 bottom: 0;
-                z-index: 999998;
                 color: gray;
-                font-family: monospace;
+                background-color: #222;
                 display: grid;
                 row-gap: 10px;
-                padding: 20px;
                 min-width: 300px;
                 max-width: 800px;
                 border-top-left-radius: 10px;
-                background-color: #222;
                 border-top: 1px solid gray;
                 border-left: 1px solid gray;
             }
@@ -69,6 +87,7 @@
                 cursor: pointer;
             }
         </style>
+        <pre class="linksgetter__preview"></pre>
         <div class="linksgetter linksgetter_hide">
             <div class="linksgetter__toggle">Links</div>
 
@@ -85,6 +104,7 @@
             <div class="linksgetter__group">
                 <div class="linksgetter__btn linksgetter__btn_copy">Copy</div>
                 <div class="linksgetter__btn linksgetter__btn_clear">Clear</div>
+                <div class="linksgetter__btn linksgetter__btn_preview">Preview</div>
             </div>
         </div>
     `;
@@ -98,15 +118,19 @@
     div.querySelector('.linksgetter__inp_field')   .addEventListener('input', (event) => { localStorage.setItem('linksgetter__var_field',    event.target.innerHTML); });
     // --- linksgetter__btn ---
     div.querySelector('.linksgetter__btn_copy').addEventListener('click', async (event) => {
-        let ret = [];
-        let urls = [...clear_urls];
-        for (let url of urls) {
-            ret.push(url);
-        }
-        await navigator.clipboard.writeText(ret.join('\n'));
+        await navigator.clipboard.writeText([...clear_urls].join('\n'));
     });
     div.querySelector('.linksgetter__btn_clear').addEventListener('click', async (event) => {
         clear_urls = new Set();
+    });
+    div.querySelector('.linksgetter__btn_preview').addEventListener('click', async (event) => {
+        if (is_preview) {
+            document.querySelector('.linksgetter__preview').classList.remove('show');
+            is_preview = false;
+        } else {
+            document.querySelector('.linksgetter__preview').classList.add('show');
+            is_preview = true;
+        }
     });
     document.body.append(div);
     //---------------------------------------------------------------
@@ -122,6 +146,7 @@
         } catch (e) {
             document.querySelector('.linksgetter__result').innerHTML = 'Error';
         }
+        document.querySelector('.linksgetter__preview').innerText = JSON.stringify([...clear_urls], null, 4);
     }, 500);
     //---------------------------------------------------------------
 })();
