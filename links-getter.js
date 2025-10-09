@@ -17,7 +17,7 @@
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
-            .linksgetter__preview .linksgetter {
+            .linksgetter__preview, .linksgetter {
                 position: fixed;
                 z-index: 999998;
                 font-family: monospace;
