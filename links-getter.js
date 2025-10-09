@@ -9,11 +9,13 @@
 
 (() => {
     'use strict';
-    let clear_urls = new Set();
-    let is_preview = false;
-    //---------------------------------------------------------------
     const var_selector = localStorage.getItem('linksgetter__var_selector') || '';
-    const var_field    = localStorage.getItem('linksgetter__var_field') || 'href';
+    const var_field    = localStorage.getItem('linksgetter__var_field')    || 'href';
+    const var_urls     = localStorage.getItem('linksgetter__var_urls')     || '[]';
+
+    let clear_urls = new Set(JSON.parse(var_urls));
+    let is_preview = false;
+
     let div = document.createElement('div');
     div.innerHTML = `
         <style>
@@ -89,16 +91,13 @@
         </style>
         <pre class="linksgetter__preview"></pre>
         <div class="linksgetter linksgetter_hide">
-            <div class="linksgetter__toggle">Links</div>
+            <div class="linksgetter__toggle">Links (<span class="linksgetter__result"></span>)</div>
 
             <div>Selector</div>
             <div class="linksgetter__inp linksgetter__inp_selector" contenteditable="plaintext-only">${var_selector}</div>
 
             <div>Field</div>
             <div class="linksgetter__inp linksgetter__inp_field" contenteditable="plaintext-only">${var_field}</div>
-
-            <div>Результат</div>
-            <div class="linksgetter__inp linksgetter__result"></div>
 
             <div>Run</div>
             <div class="linksgetter__group">
@@ -142,11 +141,12 @@
             for (let link of links) {
                 clear_urls.add(link[var_field]);
             }
-            document.querySelector('.linksgetter__result').innerHTML = 'Всего: ' + [...clear_urls].length;
+            document.querySelector('.linksgetter__result').innerHTML = [...clear_urls].length;
         } catch (e) {
-            document.querySelector('.linksgetter__result').innerHTML = 'Error';
+            document.querySelector('.linksgetter__result').innerHTML = 'ERROR';
         }
         document.querySelector('.linksgetter__preview').innerText = JSON.stringify([...clear_urls], null, 4);
+        localStorage.setItem('linksgetter__var_urls', JSON.stringify([...clear_urls]));
     }, 500);
     //---------------------------------------------------------------
 })();
