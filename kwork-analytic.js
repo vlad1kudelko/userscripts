@@ -11,21 +11,19 @@
     'use strict';
     const var_stat_name = 'kworkanalytic__var_stat';
     const var_stat = JSON.parse(localStorage.getItem(var_stat_name) || '{}');
-    const now = new Date();
 
     const getValueNDaysAgo = (history, days) => {
-        const targetDate = new Date();
-        targetDate.setDate(now.getDate() - days);
-        const targetStr = targetDate.toISOString().slice(0, 10);
-        let bestValue = null;
-        let closestDate = "";
+        const targetStr = new Date(
+            new Date().setDate(
+                new Date().getDate() - days
+            )
+        ).toISOString().slice(0, 10);
+        let arr_gt = [0];
+        let arr_lt = [0];
         for (const [val, date] of Object.entries(history)) {
-            if (date >= targetStr && date < closestDate) {
-                closestDate = date;
-                bestValue = parseInt(val);
-            }
+            if (date >= targetStr) { arr_gt.push(val); } else { arr_lt.push(val); }
         }
-        return bestValue;
+        return Math.max(...arr_gt) - Math.max(...arr_lt);
     };
 
     // находим карточки с кворками
@@ -41,17 +39,23 @@
             }
             const currentValue = parseInt(row_metric.childNodes[2].innerText);
             if (!isNaN(currentValue)) {
-                const todayStr = now.toISOString().slice(0, 10);
+                const todayStr = (new Date()).toISOString().slice(0, 10);
                 if (var_stat[id][key_metric][currentValue] === undefined) {
                     var_stat[id][key_metric][currentValue] = todayStr;
                 }
+                const val1 = getValueNDaysAgo(var_stat[id][key_metric], 1);
                 const val7 = getValueNDaysAgo(var_stat[id][key_metric], 7);
-                const val30 = getValueNDaysAgo(var_stat[id][key_metric], 30);
-
                 let statBox = document.createElement('span');
-                statBox.innerHTML = `<span style="color: #2ecc71;">+${val7}</span> | 
-                                     <span style="color: #3498db;">+${val30}</span>`;
-                row_metric.append(statBox);
+                statBox.style.cssText = `
+                    display: inline-block;
+                    width: 60px;
+                    text-align: right;
+                `;
+                let ret_html = '';
+                ret_html += (val1 > 0 ? `<span style="color: #2ecc71;">+${val1}</span>` : '0') + ' / ';
+                ret_html += (val7 > 0 ? `<span style="color: #3498db;">+${val7}</span>` : '0');
+                statBox.innerHTML = ret_html;
+                row_metric.childNodes[2].append(statBox);
             }
         });
     });
