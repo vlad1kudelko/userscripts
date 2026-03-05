@@ -21,11 +21,12 @@
         for (const [val, date] of Object.entries(history)) {
             if (date >= targetStr) { arr_gt.push(val); } else { arr_lt.push(val); }
         }
-        return Math.max(...arr_gt) - Math.max(...arr_lt);
+        const ret = Math.max(...arr_gt) - Math.max(...arr_lt);
+        return ret > 0 ? ret : 0;
     };
 
     const getColor = (color, value) => {
-        return value > 0 ? `<span style="color: ${color};">+${value}</span>` : '0';
+        return value > 0 ? `<span style="font-weight: bold; color: ${color};">+${value}</span>` : '0';
     };
 
     const main = () => {
@@ -51,8 +52,8 @@
                     if (var_stat[id][key_metric][currentValue] === undefined) {
                         var_stat[id][key_metric][currentValue] = todayStr;
                     }
-                    const val1 = getValueNDaysAgo(var_stat[id][key_metric], 1);
-                    const val7 = getValueNDaysAgo(var_stat[id][key_metric], 7);
+                    const val1 = getValueNDaysAgo(var_stat[id][key_metric], 0);
+                    const val7 = getValueNDaysAgo(var_stat[id][key_metric], 6);
                     glob_val1 += val1;
                     glob_val7 += val7;
                     let statBox = document.createElement('span');
