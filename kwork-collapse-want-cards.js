@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Kwork collapse project cards
 // @namespace    https://kwork.ru/
-// @version      2026-07-13
+// @version      2026-07-14
 // @description  Adds a compact collapse/expand button to Kwork project cards and remembers collapsed cards.
 // @author       vlad1kudelko
 // @match        *://kwork.ru/projects*
@@ -14,64 +14,56 @@
 
   const STORAGE_KEY = "kwork_collapsed_want_cards_v1";
   const CARD_SELECTOR = ".want-card";
-  const CARD_LINK_SELECTOR = 'a[href^="/projects/"]';
+  const CARD_LINK_SELECTOR = 'a[href*="/projects/"]';
   const BUTTON_CLASS = "kw-collapse-card-btn";
   const TITLE_CLASS = "kw-collapse-card-title";
   const COLLAPSED_CLASS = "kw-collapse-card--collapsed";
 
   const BUTTON_SIZE = 28;
   const BUTTON_GAP = 6;
+  const RENDER_INTERVAL = 300;
 
   const loadCollapsedIds = () => {
     try {
       const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      return new Set(Array.isArray(value) ? value : []);
+      return new Set(Array.isArray(value) ? value.map(String) : []);
     } catch (_) {
       return new Set();
     }
   };
 
-  const collapsedIds = loadCollapsedIds();
-
-  const saveCollapsedIds = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsedIds]));
+  const saveCollapsedIds = (ids) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
   };
 
+  const toggleCollapsedId = (id) => {
+    const ids = loadCollapsedIds();
+
+    if (ids.has(id)) {
+      ids.delete(id);
+    } else {
+      ids.add(id);
+    }
+
+    saveCollapsedIds(ids);
+  };
+
+  const getProjectLink = (card) => card.querySelector(CARD_LINK_SELECTOR);
+
   const getCardId = (card) => {
-    const link = card.querySelector(CARD_LINK_SELECTOR);
-    const href = link?.getAttribute("href") || "";
-    const id = href.match(/\/projects\/(\d+)/)?.[1];
-    return id || href || card.textContent.trim().slice(0, 80);
+    const href = getProjectLink(card)?.href || "";
+    return href.match(/\/projects\/(\d+)/)?.[1] || null;
   };
 
   const getCardTitle = (card) => {
-    const link = card.querySelector(CARD_LINK_SELECTOR);
-    return link?.textContent.trim() || "Без названия";
+    return getProjectLink(card)?.textContent.trim() || "Без названия";
   };
 
-  const setCollapsed = (card, button, collapsed) => {
+  const renderCard = (card, collapsedIds) => {
     const id = getCardId(card);
+    if (!id) return;
 
-    card.classList.toggle(COLLAPSED_CLASS, collapsed);
-    button.textContent = collapsed ? "+" : "−";
-    button.title = collapsed ? "Развернуть карточку" : "Свернуть карточку";
-    button.setAttribute("aria-label", button.title);
-    button.setAttribute("aria-expanded", String(!collapsed));
-
-    if (collapsed) {
-      collapsedIds.add(id);
-    } else {
-      collapsedIds.delete(id);
-    }
-
-    saveCollapsedIds();
-  };
-
-  const processCard = (card) => {
-    const id = getCardId(card);
-    let button = card.querySelector(`:scope > .${BUTTON_CLASS}`);
     let title = card.querySelector(`:scope > .${TITLE_CLASS}`);
-
     if (!title) {
       title = document.createElement("div");
       title.className = TITLE_CLASS;
@@ -80,6 +72,7 @@
     title.textContent = getCardTitle(card);
     title.title = title.textContent;
 
+    let button = card.querySelector(`:scope > .${BUTTON_CLASS}`);
     if (!button) {
       button = document.createElement("button");
       button.type = "button";
@@ -87,17 +80,24 @@
       button.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        setCollapsed(card, button, !card.classList.contains(COLLAPSED_CLASS));
-      });
 
+        const currentId = getCardId(card);
+        if (currentId) toggleCollapsedId(currentId);
+      });
       card.prepend(button);
     }
 
-    setCollapsed(card, button, collapsedIds.has(id));
+    const collapsed = collapsedIds.has(id);
+    card.classList.toggle(COLLAPSED_CLASS, collapsed);
+    button.textContent = collapsed ? "+" : "−";
+    button.title = collapsed ? "Развернуть карточку" : "Свернуть карточку";
+    button.setAttribute("aria-label", button.title);
+    button.setAttribute("aria-expanded", String(!collapsed));
   };
 
-  const processCards = () => {
-    document.querySelectorAll(CARD_SELECTOR).forEach(processCard);
+  const renderCards = () => {
+    const collapsedIds = loadCollapsedIds();
+    document.querySelectorAll(CARD_SELECTOR).forEach((card) => renderCard(card, collapsedIds));
   };
 
   const addStyles = () => {
@@ -170,17 +170,7 @@
     document.head.append(style);
   };
 
-  const debounce = (fn, delay = 100) => {
-    let timer = null;
-    return () => {
-      clearTimeout(timer);
-      timer = setTimeout(fn, delay);
-    };
-  };
-
   addStyles();
-  processCards();
-
-  const observer = new MutationObserver(debounce(processCards));
-  observer.observe(document.body, { childList: true, subtree: true });
+  renderCards();
+  setInterval(renderCards, RENDER_INTERVAL);
 })();
